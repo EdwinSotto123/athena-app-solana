@@ -1,0 +1,9 @@
+{
+  "name": "Athena - Liberta Agent",
+  "description": "An autonomous financial shield and justice protocol for vulnerable women, disguised as a calculator.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera",
+    "microphone"
+  ]
+}

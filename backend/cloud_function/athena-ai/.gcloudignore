@@ -1,0 +1,9 @@
+.gcloudignore
+.git
+.gitignore
+node_modules/
+*.log
+test-local.js
+.env
+.env.*
+README.md

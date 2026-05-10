@@ -1,0 +1,8 @@
+{
+  "network": "Fraxtal Testnet",
+  "chainId": 2523,
+  "contractAddress": "0x4Bca7ebC3Cba0ea5Ada962E319BfB8353De81605",
+  "deployedBy": "0x1F2a710fFaF8F81A339Da2824188597539DEc119",
+  "deployedAt": "2025-12-09T10:05:32.164Z",
+  "txHash": "0x0a03acb1fca6bed69e1cc454e3fb49a15313ef2354acf501d8c115dcb76912d3"
+}

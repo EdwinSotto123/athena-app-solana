@@ -1,0 +1,18 @@
+## [Configuration Options](https://adk.iqai.com/docs/framework/agents/llm-agents#configuration-options)
+
+[Configuration Options](https://adk.iqai.com/docs/framework/agents/llm-agents#configuration-options)
+All LLMAgent provides a rich set of configuration options to customize behaviour, capabilities, and integrations. Below is a comprehensive overview of all available options, organized by category. All options are optional unless marked except name and description.
+
+```
+LLMAgent
+```
+
+
+```
+name
+```
+
+
+```
+description
+```

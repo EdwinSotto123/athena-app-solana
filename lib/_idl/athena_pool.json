@@ -1,0 +1,865 @@
+{
+  "address": "GHhuwP2XesUboREQGZ7dDEKArnEv1hUiSPyvvWhsECgh",
+  "metadata": {
+    "name": "athena_pool",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Athena multi-case donation pool — Solana port of AthenaPool.sol"
+  },
+  "instructions": [
+    {
+      "name": "admin_update_owner",
+      "docs": [
+        "Admin recovery: replace the owner of a case. Equivalent of",
+        "`updateCaseOwner` in the Solidity version."
+      ],
+      "discriminator": [
+        91,
+        111,
+        50,
+        63,
+        110,
+        160,
+        21,
+        37
+      ],
+      "accounts": [
+        {
+          "name": "global",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "global"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "new_owner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "donate",
+      "docs": [
+        "Equivalent of `donate(caseId) payable`. Anyone can donate; the",
+        "SOL is transferred from the donor's wallet to the case PDA via",
+        "a system_program CPI."
+      ],
+      "discriminator": [
+        121,
+        186,
+        218,
+        211,
+        73,
+        70,
+        196,
+        180
+      ],
+      "accounts": [
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "donor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_case",
+      "docs": [
+        "Equivalent of Solidity `createCase`. Only the admin (signer of",
+        "`initialize_global`) can call this."
+      ],
+      "discriminator": [
+        9,
+        26,
+        237,
+        193,
+        224,
+        164,
+        59,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "global",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "global"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        },
+        {
+          "name": "safe_contact",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "initialize_global",
+      "docs": [
+        "Initialize the global state once per deployment. Stores the",
+        "admin pubkey and a counter of created cases. Idempotent —",
+        "fails if called twice."
+      ],
+      "discriminator": [
+        47,
+        225,
+        15,
+        112,
+        86,
+        51,
+        190,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "global",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "set_safe_contact",
+      "docs": [
+        "Equivalent of `setSafeContact`. Only the case owner."
+      ],
+      "discriminator": [
+        250,
+        47,
+        111,
+        144,
+        110,
+        99,
+        116,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "case"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "new_contact",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "trigger_sos",
+      "docs": [
+        "Equivalent of `triggerSOS`. Atomically:",
+        "1. Drains all donations (lamports above rent minimum)",
+        "2. Transfers them to the registered safe_contact",
+        "3. Marks the case inactive",
+        "All in a single Solana transaction."
+      ],
+      "discriminator": [
+        98,
+        198,
+        147,
+        222,
+        182,
+        52,
+        224,
+        15
+      ],
+      "accounts": [
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "case"
+          ]
+        },
+        {
+          "name": "safe_contact",
+          "docs": [
+            "on the case account, which guarantees this address matches the",
+            "pubkey stored when the case was created."
+          ],
+          "writable": true,
+          "relations": [
+            "case"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "docs": [
+        "Equivalent of `withdraw(caseId, amount)`. Only the case owner.",
+        "Cannot drain below the rent-exempt minimum, so the PDA itself",
+        "stays alive."
+      ],
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "case",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "case"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Case",
+      "discriminator": [
+        24,
+        222,
+        147,
+        26,
+        60,
+        162,
+        154,
+        176
+      ]
+    },
+    {
+      "name": "Global",
+      "discriminator": [
+        167,
+        232,
+        232,
+        177,
+        200,
+        108,
+        114,
+        127
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CaseCreated",
+      "discriminator": [
+        152,
+        233,
+        48,
+        247,
+        69,
+        252,
+        84,
+        146
+      ]
+    },
+    {
+      "name": "CaseDeactivated",
+      "discriminator": [
+        206,
+        166,
+        139,
+        163,
+        200,
+        215,
+        201,
+        54
+      ]
+    },
+    {
+      "name": "DonationReceived",
+      "discriminator": [
+        160,
+        135,
+        32,
+        7,
+        241,
+        105,
+        91,
+        158
+      ]
+    },
+    {
+      "name": "FundsWithdrawn",
+      "discriminator": [
+        56,
+        130,
+        230,
+        154,
+        35,
+        92,
+        11,
+        118
+      ]
+    },
+    {
+      "name": "SafeContactUpdated",
+      "discriminator": [
+        197,
+        253,
+        118,
+        134,
+        51,
+        99,
+        202,
+        145
+      ]
+    },
+    {
+      "name": "SosTriggered",
+      "discriminator": [
+        229,
+        128,
+        112,
+        105,
+        20,
+        53,
+        89,
+        148
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ZeroAmount",
+      "msg": "Donation must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "CaseInactive",
+      "msg": "Case is not active"
+    },
+    {
+      "code": 6002,
+      "name": "ZeroBalance",
+      "msg": "Case has zero withdrawable balance"
+    },
+    {
+      "code": 6003,
+      "name": "InsufficientBalance",
+      "msg": "Insufficient balance for withdrawal"
+    },
+    {
+      "code": 6004,
+      "name": "NotOwner",
+      "msg": "Caller is not the case owner"
+    },
+    {
+      "code": 6005,
+      "name": "NotAdmin",
+      "msg": "Caller is not the platform admin"
+    },
+    {
+      "code": 6006,
+      "name": "SafeContactMismatch",
+      "msg": "Provided safe_contact does not match the registered one"
+    },
+    {
+      "code": 6007,
+      "name": "NoSafeContact",
+      "msg": "Safe contact is not configured"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidAddress",
+      "msg": "Invalid address (zero pubkey)"
+    },
+    {
+      "code": 6009,
+      "name": "Overflow",
+      "msg": "Numeric overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "Case",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "safe_contact",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_donations",
+            "type": "u64"
+          },
+          {
+            "name": "donation_count",
+            "type": "u32"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "safe_contact",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseDeactivated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DonationReceived",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "donor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FundsWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "to",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Global",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "case_count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SafeContactUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "new_contact",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SosTriggered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "safe_contact",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

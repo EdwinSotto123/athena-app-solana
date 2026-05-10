@@ -1,0 +1,18 @@
+{
+  "name": "athena-ai-function",
+  "version": "1.0.0",
+  "description": "Athena AI backend (chat + forensic analysis) running on Vertex AI inside a Google Cloud Function. No browser-side Gemini API keys needed.",
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "start": "functions-framework --target=athenaAi --port=8080",
+    "test:local": "node test-local.js"
+  },
+  "dependencies": {
+    "@google-cloud/aiplatform": "^3.34.0",
+    "@google-cloud/vertexai": "^1.10.0",
+    "@google-cloud/functions-framework": "^3.4.2"
+  }
+}

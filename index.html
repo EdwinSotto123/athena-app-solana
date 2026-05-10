@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Athena</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23121212'/%3E%3Cpath fill='%2314F195' d='M5 9h22l-2.5 4H7.5z'/%3E%3Cpath fill='%239945FF' d='M5 17h22l-2.5 4H7.5z'/%3E%3C/svg%3E" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              /* Solana brand + Athena accents */
+              solana: {
+                mint: '#14F195',
+                violet: '#9945FF',
+                dark: '#121212',
+              },
+              athena: {
+                50: '#e8fff5',
+                100: '#d4f5e8',
+                500: '#14F195',
+                600: '#0fd688',
+                800: '#9945FF',
+                900: '#6b2fc9',
+                dark: '#0f172a',
+              },
+              frax: {
+                black: '#000000',
+                white: '#ffffff',
+              }
+            },
+            backgroundImage: {
+              'solana-gradient': 'linear-gradient(135deg, #9945FF 0%, #14F195 100%)',
+              'solana-bar': 'linear-gradient(90deg, #14F195 0%, #5b8cff 50%, #9945FF 100%)',
+            },
+            fontFamily: {
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Hide scrollbar for cleaner mobile UI */
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-black text-white overflow-hidden h-screen w-screen">
+    <div id="root" class="h-full w-full"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "name": "athena---liberta-agent",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sol:genkey": "node scripts/solana-genkey.cjs",
+    "sol:export-key": "node scripts/solana-export-key.cjs",
+    "sol:airdrop": "ts-node --esm scripts/solana-airdrop.ts",
+    "sol:deploy": "ts-node --esm scripts/solana-deploy.ts",
+    "sol:sync-build": "node scripts/solana-sync-build.cjs",
+    "sol:sync-idl": "node -e \"const fs=require('fs'); const path=require('path'); const src=path.resolve('solana/target/idl/athena_pool.json'); if(!fs.existsSync(src)){console.error('Run \\\"anchor build\\\" first inside ./solana'); process.exit(1);} const dst=path.resolve('lib/_idl/athena_pool.json'); fs.mkdirSync(path.dirname(dst),{recursive:true}); fs.copyFileSync(src,dst); console.log('IDL synced ->', dst);\"",
+    "sol:info": "ts-node --esm scripts/solana-dump-info.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@google-cloud/vertexai": "^1.10.0",
+    "@google/genai": "^1.32.0",
+    "@iqai/adk": "^0.5.7",
+    "@solana/spl-memo": "^0.2.5",
+    "@solana/web3.js": "^1.95.3",
+    "bs58": "^6.0.0",
+    "ethers": "^6.16.0",
+    "firebase": "^12.6.0",
+    "lucide-react": "^0.556.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/node": "^22.14.0",
+    "@types/uuid": "^10.0.0",
+    "@vercel/node": "^5.7.16",
+    "@vitejs/plugin-react": "^5.0.0",
+    "dotenv": "^17.2.3",
+    "solc": "^0.8.31",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-node-polyfills": "^0.26.0"
+  }
+}
