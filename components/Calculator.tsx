@@ -15,6 +15,10 @@ const Calculator: React.FC<CalculatorProps> = ({ onCommand }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<AthenaUser | null>(null);
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Refs sincronos: evita que %= falle si el buffer React aún no hizo rerender tras pulsar %. */
+  const displayRef = useRef('0');
+  const bufferRef = useRef('');
+  const pendingAfterAuth = useRef<'LOGIN' | 'GENESIS' | null>(null);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -38,86 +42,108 @@ const Calculator: React.FC<CalculatorProps> = ({ onCommand }) => {
   // %=    -> Toggle Legend (NEW)
   // ...   -> Wipe
 
+  const resetCalc = () => {
+    displayRef.current = '0';
+    bufferRef.current = '';
+    setDisplay('0');
+    setInputBuffer('');
+  };
+
   const handlePress = (val: string) => {
-    let newDisplay = display;
-    let newBuffer = inputBuffer + val;
+    const d = displayRef.current;
+    let b = bufferRef.current;
+    let newDisplay = d;
+    const newBuffer = b + val;
 
     // Special case for "..." (Wipe)
     if (val === '.') {
-      if (display.endsWith('..')) {
+      if (d.endsWith('..')) {
         onCommand('WIPE');
-        setDisplay('0');
-        setInputBuffer('');
+        resetCalc();
         return;
       }
     }
 
     if (val === 'C') {
-      newDisplay = '0';
-      newBuffer = '';
-    } else if (val === '=') {
-      // Check for Commands BEFORE evaluating math
+      resetCalc();
+      return;
+    }
 
-      // 1. Toggle Legend Command
-      if (newBuffer === '%=' || display === '%') {
-        setShowManual(prev => !prev);
-        setDisplay('0');
-        setInputBuffer('');
+    if (val === '=') {
+      // 1. Toggle Legend: sólo secuencia exacta %= (no "100%="), o pantalla única "%"
+      if (newBuffer === '%=' || d === '%') {
+        setShowManual((prev) => !prev);
+        resetCalc();
         return;
       }
 
-      // 2. Standard Commands
+      // 2. Entrada al panel: obliga cuenta (1999= y 1+1=)
       if (newBuffer === '1+1=') {
+        if (!currentUser) {
+          pendingAfterAuth.current = 'GENESIS';
+          setShowAuthModal(true);
+          resetCalc();
+          return;
+        }
         onCommand('GENESIS');
+        resetCalc();
         return;
       }
       if (newBuffer === '1999=') {
+        if (!currentUser) {
+          pendingAfterAuth.current = 'LOGIN';
+          setShowAuthModal(true);
+          resetCalc();
+          return;
+        }
         onCommand('LOGIN');
+        resetCalc();
         return;
       }
       if (newBuffer === '9÷11=') {
         onCommand('FLASH_CHECK');
-        setDisplay('0');
-        setInputBuffer('');
+        resetCalc();
         return;
       }
       if (newBuffer === '0÷0=') {
         onCommand('SOS');
+        displayRef.current = 'Error';
+        bufferRef.current = '';
         setDisplay('Error');
         setInputBuffer('');
         return;
       }
       if (newBuffer === '7x7=') {
         onCommand('POOL_STATUS');
-        setDisplay('0');
-        setInputBuffer('');
+        resetCalc();
         return;
       }
 
       try {
-        // Standard Math
-        // Sanitizing input: replace visual operators with JS operators
-        // Handle % as /100 for standard math if it appears in a number context (e.g. 50%)
-        let expression = display
+        let expression = d
           .replace(/x/g, '*')
           .replace(/÷/g, '/')
           .replace(/%/g, '/100');
 
         // eslint-disable-next-line no-eval
         newDisplay = eval(expression).toString();
-      } catch (e) {
+      } catch {
         newDisplay = 'Error';
       }
+      b = newBuffer;
     } else {
-      if (display === '0' || display === 'Error') {
+      if (d === '0' || d === 'Error') {
         newDisplay = val;
       } else {
-        newDisplay += val;
+        newDisplay = d + val;
       }
+      b = newBuffer;
     }
 
+    displayRef.current = newDisplay;
+    bufferRef.current = b;
     setDisplay(newDisplay);
-    setInputBuffer(newBuffer);
+    setInputBuffer(b);
   };
 
   // Hidden Manual Logic (Hold to show, release to hide)
@@ -139,6 +165,15 @@ const Calculator: React.FC<CalculatorProps> = ({ onCommand }) => {
 
   const handleAuthSuccess = (user: AthenaUser) => {
     setCurrentUser(user);
+    const pending = pendingAfterAuth.current;
+    pendingAfterAuth.current = null;
+    if (pending === 'LOGIN') onCommand('LOGIN');
+    if (pending === 'GENESIS') onCommand('GENESIS');
+  };
+
+  const closeAuthModal = () => {
+    pendingAfterAuth.current = null;
+    setShowAuthModal(false);
   };
 
   const btnClass = "relative h-20 w-20 rounded-full text-3xl font-medium m-2 transition active:opacity-70 flex items-center justify-center select-none";
@@ -196,7 +231,7 @@ const Calculator: React.FC<CalculatorProps> = ({ onCommand }) => {
       {/* Auth Modal */}
       <AuthModal
         isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
+        onClose={closeAuthModal}
         onAuthSuccess={handleAuthSuccess}
       />
 
